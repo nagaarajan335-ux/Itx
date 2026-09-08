@@ -18,6 +18,9 @@ Everything lives in [`selling-kit/`](selling-kit/):
 | File | What it is |
 |---|---|
 | [`README.md`](selling-kit/README.md) | Index, the blocker, and the 10-minute quick start |
+| [`my-4-ideas.txt`](selling-kit/my-4-ideas.txt) | **Fill your 4 ideas in here**, then run the evaluator |
+| [`idea-evaluator.py`](selling-kit/idea-evaluator.py) | Margin + profit + WORKS/DOES NOT WORK verdict per idea |
+| [`08-idea-viability-scorecard.md`](selling-kit/08-idea-viability-scorecard.md) | The 5 reasons an idea fails, and the 6 costly warnings |
 | [`product-profile.md`](selling-kit/product-profile.md) | Fill-in source of truth — everything else derives from it |
 | [`01-platform-comparison.md`](selling-kit/01-platform-comparison.md) | Etsy vs Redbubble: fees, traffic, the verdict |
 | [`02-pricing-and-profit.md`](selling-kit/02-pricing-and-profit.md) | Exact price points and profit per product type |
@@ -32,8 +35,9 @@ Everything lives in [`selling-kit/`](selling-kit/):
 
 ```bash
 cd selling-kit
-python3 profit-calculator.py demo
-python3 profit-calculator.py matrix --product "classic t-shirt"
+python3 idea-evaluator.py --types                     # which categories work
+python3 idea-evaluator.py --template > my-4-ideas.txt  # fill in your ideas
+python3 idea-evaluator.py my-4-ideas.txt               # verdict + profit
 ```
 
 ## The headline finding

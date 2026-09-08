@@ -1,0 +1,94 @@
+# ============================================================================
+# MY 4 IDEAS  --  fill this in, then run:
+#
+#     cd selling-kit
+#     python3 idea-evaluator.py my-4-ideas.txt
+#
+# You get: margin + profit per sale on BOTH platforms, a monthly projection,
+# a viability score, and a WORKS / DOES NOT WORK verdict with reasons.
+#
+# `name` is the only required field. Everything else has a sensible default.
+# Send this file back to me filled in and I'll write your real listings.
+# ============================================================================
+
+# FIELD GUIDE ---------------------------------------------------------------
+#
+# type =            text-humor          funny quotes / memes / slogans
+#                   minimalist-line-art single-weight line drawing
+#                   botanical-vintage   vintage / scientific illustration
+#                   illustration-art    original character or scene art
+#                   pattern-seamless    repeating pattern / surface design
+#                   photographic        a photograph
+#                   niche-hobby         birds, fishing, nursing, D&D, plants...
+#                   seasonal            Christmas, Halloween, Mother's Day...
+#                   personalized        names, monograms, custom pets
+#                   abstract            geometric / abstract shapes
+#
+# resolution_px =   width of your master artwork in pixels
+#                   6000+ excellent | 3600-6000 fine | 1500-3600 borderline
+#                   under 1500 = cannot print, idea fails
+#
+# ip_risk =         none | low | medium | high
+#                   HIGH = contains a character, brand, logo, celebrity,
+#                   sports team, song lyric or movie quote -> idea fails
+#
+# competition =     low | medium | high | brutal
+#                   Search your main phrase on Etsy and count results:
+#                   under 5k = low | 5k-50k = medium | 50k-200k = high |
+#                   over 200k = brutal
+#
+# ai_assisted =     yes | no
+#
+# products =        comma-separated list. Available:
+#                   digital, digital-bundle, sticker, tshirt, hoodie, mug,
+#                   artprint, phonecase, tote, notebook, pillow, duvet,
+#                   metalprint
+#
+# country =         us | uk | eu | ca | au | in | other   (sets your fee rate)
+# rb_tier =         standard (all new accounts) | premium | pro
+# etsy_ship_charged = 5.00   (what the buyer pays for shipping; 0 = free)
+# ============================================================================
+
+
+# --- IDEA 1 -----------------------------------------------------------------
+name = 
+type = 
+resolution_px = 
+ip_risk = 
+competition = 
+ai_assisted = 
+products = 
+country = 
+
+
+# --- IDEA 2 -----------------------------------------------------------------
+name = 
+type = 
+resolution_px = 
+ip_risk = 
+competition = 
+ai_assisted = 
+products = 
+country = 
+
+
+# --- IDEA 3 -----------------------------------------------------------------
+name = 
+type = 
+resolution_px = 
+ip_risk = 
+competition = 
+ai_assisted = 
+products = 
+country = 
+
+
+# --- IDEA 4 -----------------------------------------------------------------
+name = 
+type = 
+resolution_px = 
+ip_risk = 
+competition = 
+ai_assisted = 
+products = 
+country = 
