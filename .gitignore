@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Artwork working files — keep out of Git (large binaries)
+# Source art belongs in a cloud drive or Git LFS, not the repo.
+assets/master/
+assets/exports/
+*.psd
+*.ai
+*.tif
+*.tiff
+
+# OS
+.DS_Store
+Thumbs.db
