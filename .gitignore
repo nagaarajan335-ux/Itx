@@ -1,0 +1,8 @@
+# generated media & build artifacts (kept in workspace, not in git)
+output/
+build/
+Itx/assets/
+Itx/build/
+*.wav
+*.mp4
+__pycache__/
