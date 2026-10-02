@@ -1,0 +1,4 @@
+faster-whisper>=1.0      # speech-to-text with word timestamps (also installs PyAV)
+imageio-ffmpeg>=0.5      # bundled ffmpeg, so no separate install is needed
+numpy
+Pillow

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shorts-maker"
+version = "0.1.0"
+description = "Turn long videos you own into captioned, vertical YouTube Shorts"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "faster-whisper>=1.0",
+  "imageio-ffmpeg>=0.5",
+  "numpy",
+  "Pillow",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+shorts-maker = "shorts_maker.cli:main"
+
+[tool.setuptools]
+packages = ["shorts_maker"]
+
+[tool.setuptools.package-data]
+shorts_maker = ["assets/fonts/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
