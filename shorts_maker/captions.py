@@ -233,14 +233,23 @@ def write_ass(
     hook: Optional[str] = None,
     hook_y: int = 300,
     hook_font_name: Optional[str] = None,
+    extra_events: Sequence[str] = (),
+    underlay_events: Sequence[str] = (),
 ) -> int:
-    """Write the .ass file; returns the number of events written."""
-    events = build_events(words, style, cx=width // 2, cy=caption_y, clip_len=clip_len) if words else []
+    """Write the .ass file; returns the number of events written.
+
+    ``extra_events`` / ``underlay_events`` are ready-made ``Dialogue:`` lines (used by story videos for
+    end cards and screen dimming); underlay events are listed first so they are drawn beneath the captions.
+    """
+    events = list(underlay_events)
+    if words:
+        events += build_events(words, style, cx=width // 2, cy=caption_y, clip_len=clip_len)
     if hook:
         end = min(style.hook_secs, clip_len)
         events.append(
             f"Dialogue: 1,{ass_time(0)},{ass_time(end)},Hook,,0,0,0,,"
             f"{{\\an5\\pos({width // 2},{hook_y})\\fad(180,250)}}{wrap_hook(hook)}"
         )
+    events += list(extra_events)
     Path(path).write_text(_header(width, height, style, hook_font_name) + "\n".join(events) + "\n", encoding="utf-8")
     return len(events)

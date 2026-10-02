@@ -1,0 +1,116 @@
+{
+  "title": "Part 1 - The Door",
+  "hook": "PART 1: THE DOOR",
+  "style": {"highlight": "FF3B30", "hook_box": "A8141C", "hook_text": "FFFFFF"},
+  "grain": 5,
+  "scenes": [
+    {
+      "image": "images/scene1_hallway.jpg",
+      "duration": 5,
+      "lead": 0.7,
+      "tail": 0.6,
+      "tension": 0.15,
+      "motion": {
+        "zoom": [1.0, 1.16],
+        "center": [[0.5, 0.5], [0.5, 0.43]],
+        "ease": "smooth",
+        "flicker": 0.6
+      },
+      "lines": [
+        {
+          "audio": "voice/scene1.wav",
+          "text": "I have lived in this apartment for six months. Last night, I found a door I had never seen before.",
+          "pauses": {"0": 0.35, "1": 0.15}
+        }
+      ]
+    },
+    {
+      "image": "images/scene2_door.jpg",
+      "duration": 5,
+      "tension": 0.3,
+      "transition": {"type": "fade", "duration": 1.4, "align": "end"},
+      "motion": {
+        "zoom": [1.16, 1.36],
+        "center": [[0.5, 0.43], [0.5, 0.51]],
+        "ease": "in",
+        "flicker": 0.35
+      },
+      "lines": [
+        {
+          "audio": "voice/scene2.wav",
+          "text": "It was between my bedroom and the bathroom.",
+          "at": 1.0
+        }
+      ]
+    },
+    {
+      "image": "images/scene3_hand.jpg",
+      "duration": 5.4,
+      "tension": 0.55,
+      "motion": {
+        "zoom": [1.0, 1.3],
+        "center": [[0.5, 0.5], [0.6, 0.5]],
+        "ease": "linear",
+        "shake": 4
+      },
+      "lines": [
+        {
+          "audio": "voice/scene3.wav",
+          "text": "I was sure this wall had always been empty.",
+          "at": 0.5
+        }
+      ],
+      "sfx": [
+        {"type": "heartbeat", "at": 0.0, "dur": 14, "bpm": [62, 100], "gain": -17},
+        {"type": "click", "at": 3.8, "gain": -14}
+      ]
+    },
+    {
+      "image": "images/scene4_ajar.jpg",
+      "duration": 6,
+      "tension": 0.8,
+      "motion": {
+        "zoom": [1.0, 1.4],
+        "center": [[0.5, 0.5], [0.5, 0.5]],
+        "ease": "in"
+      },
+      "lines": [
+        {
+          "audio": "voice/scene4.wav",
+          "text": "Then I heard someone whisper my name.",
+          "at": 1.3
+        }
+      ],
+      "sfx": [
+        {"type": "creak", "at": 0.1, "dur": 1.5, "gain": -13},
+        {"type": "whoosh", "at": 0.3, "dur": 1.6, "gain": -26},
+        {"type": "dropout", "at": 3.6, "dur": 4.2, "fade": 0.4}
+      ]
+    },
+    {
+      "image": "images/scene5_eyes.jpg",
+      "duration": 5,
+      "lead": 0.9,
+      "tension": 1.0,
+      "motion": {
+        "zoom": [1.0, 1.12],
+        "center": [[0.5, 0.46], [0.5, 0.44]],
+        "ease": "linear",
+        "shake": 2
+      },
+      "lines": [
+        {
+          "audio": "voice/scene5_whisper.wav",
+          "style": "whisper",
+          "text": "Rajan...",
+          "at": 0.9
+        }
+      ],
+      "sfx": [
+        {"type": "riser", "at": 1.5, "dur": 1.0, "gain": -22},
+        {"type": "boom", "at": 2.5, "dur": 2.4, "gain": -3}
+      ],
+      "end_text": {"text": "PART 2?", "at": 2.5, "dim": 0.5}
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 Turn a long video **you own** into captioned, vertical YouTube Shorts. It finds the strongest moments, cuts them on word boundaries, reframes to 9:16, burns in word-by-word captions and a hook banner, normalises the loudness, and writes a title and description for each Short.
 
+It can also build a narrated horror-story Short from a few stills and a voice recording: see [story mode](#story-mode-a-narrated-captioned-short-from-stills-and-a-voice).
+
 <p align="center">
   <img src="docs/preview.jpg" width="270" alt="Example Short: hook banner on top, the full frame in the middle, a word-highlighted caption below">
 </p>
@@ -102,6 +104,47 @@ Limits worth knowing:
 4. Link back to the long video (`--source-url`); that is the point of Shorts for a long-form channel.
 5. Keep titles specific. The generated title is only the hook sentence: rewrite it.
 
+## Story mode: a narrated, captioned Short from stills and a voice
+
+Not cutting a long video but telling a story? `story` turns a handful of pictures and recorded lines into a finished Short: slow camera moves, dissolves, word-by-word captions, an original sound bed and loudness mastering. It runs offline, and the sound is synthesised from scratch, so there is no music licence to clear.
+
+```bash
+python -m shorts_maker story stories/part-1-the-door/story.json
+# -> output/part-1-the-door/part-1-the-door.mp4   (1080x1920, H.264 + AAC; about 2 minutes to render)
+
+python -m shorts_maker story stories/part-1-the-door/story.json --preview 8 --size 540x960 --preset ultrafast   # quick look
+```
+
+`stories/part-1-the-door/` is a complete example: five scenes (hallway, the door, the hand, the door ajar, the eyes), 29 seconds, with its pictures, voice clips, the finished `part-1-the-door.mp4` and `posting.md` (titles, description, hashtags, upload checklist).
+
+You bring the pictures (any size; 9:16 fills the screen) and the voice lines (any audio format, from a text-to-speech tool or your own recording) and describe the scenes in `story.json`:
+
+| Field | Meaning |
+|---|---|
+| `title`, `hook` | output file name; banner shown for the first seconds (optional) |
+| `style` | caption colours as hex RGB: `highlight`, `primary`, `hook_box`, `hook_text` |
+| `grain` | film grain strength, `0` for none (default 5) |
+| scene `image`, `duration` | the picture, and the *minimum* seconds it stays: a scene always stretches to fit its voice |
+| `lead`, `tail` | silence before the first line and after the last one (default 0.6 s) |
+| `motion` | `zoom: [from, to]`, `center: [[x, y], [x, y]]` (0-1), `ease` (`smooth`, `linear`, `in`, `out`), `shake` (px), `flicker` (0-1, a failing light) |
+| `transition` | `{"type": "fade", "duration": 1.4, "align": "end"}` dissolves into this scene (`align`: the dissolve starts at, is centred on, or ends at the cut); the default is a hard cut |
+| `lines` | `audio`, `text`, optional `at` / `gap` (seconds), `pauses` (`{"0": 0.35}` lengthens the pause after speech chunk 0), `style` (`narrator` or `whisper`), `gain_db` |
+| `sfx` | `creak`, `click`, `whoosh`, `riser`, `heartbeat`, `boom`, or `dropout` (silences the bed), each with `at` (negative = counted from the end of the scene) and `gain` (dB) |
+| `tension` | 0-1: how loud the drone is in this scene |
+| `end_text` | `{"text": "PART 2?", "at": 2.5, "dim": 0.5}`: a big end card, optionally dimming the picture |
+
+How it works, so you know what to adjust:
+
+* **Words are timed from the audio.** Pauses at commas and full stops are detected and matched to the text; inside each stretch of speech, time is shared out by word length. That is accurate enough for 2-3 word captions.
+* **Voices.** The narrator gets a rumble filter, a little body and presence and light compression. A `whisper` line is turned into breath (the spectrum is kept, the phase thrown away) with a long dark reverb and a far echo; its caption is a faint ghost word.
+* **Sound bed.** A slowly breathing drone whose notes sit a semitone apart, room tone, a heartbeat that speeds up, and one-shot effects, all generated with numpy. The bed ducks under the narrator, and `dropout` removes it for the silences horror needs.
+* **Mastering.** The mix is measured and brought to -15 LUFS, then limited to a -2 dBFS sample peak (about -1.5 dBTP), measured again, and encoded as AAC.
+* **Frame exact.** Scenes are laid on a timeline in whole frames, so cuts, captions and sound cannot drift apart (a test renders a story and checks the frame count, the cut positions and that no frame is black).
+
+To make **Part 2**: copy the folder, swap the pictures and voice clips, edit the text and timings in `story.json`, and run the same command. Use `--no-sound-design` for narration only if you would rather add your own music.
+
+Before you upload: listen once with headphones (the sound design is generated, so give it a real listen), and if the pictures or the voice are AI-generated and look realistic, switch on YouTube's *altered or synthetic content* disclosure. The command reminds you.
+
 ## Development
 
 ```bash
@@ -109,15 +152,17 @@ pip install -e ".[dev]"
 pytest
 ```
 
-The tests generate their own media with ffmpeg (nothing binary is checked in) and cover the transcript parsers, caption timing and layout, clip selection, and real renders including pixel checks that captions are burned in and loudness lands near -14 LUFS. Whisper itself is replaced by a stand-in because the model needs a download.
+The tests generate their own media with ffmpeg and cover the transcript parsers, caption timing and layout, clip selection, story planning and sound design, and real renders including pixel checks that captions are burned in and that loudness lands where it should. Whisper itself is replaced by a stand-in because the model needs a download. The only binaries in the repository are the README preview and the example story under `stories/`.
 
 ```
 shorts_maker/
-  cli.py          commands: transcribe, suggest, render, run
+  cli.py          commands: transcribe, suggest, render, run, story
   transcript.py   Whisper (faster-whisper) + SRT/VTT/JSON import, word timings
   suggest.py      moment scoring, loudness analysis
   captions.py     ASS subtitles: karaoke captions + hook banner, text fitting
   render.py       cut, 9:16 reframe, burn-in, loudness, export, report
-  media.py        ffmpeg discovery and probing
+  media.py        ffmpeg discovery, probing, audio decoding
+  story.py        story mode: scene planning, word timing, mixing, mastering, render
+  soundscape.py   synthesised drone, heartbeat, effects, voice processing, limiter
   assets/fonts/   Poppins ExtraBold (SIL Open Font License, see OFL-Poppins.txt)
 ```

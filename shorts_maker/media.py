@@ -105,3 +105,46 @@ def probe(path) -> MediaInfo:
 
     width, height = _display_size(path)
     return MediaInfo(duration=duration, width=width, height=height, fps=fps, has_audio=has_audio)
+
+
+def decode_audio(path, sr: int = 48000, mono: bool = True):
+    """Decode a file's first audio stream to float32 at ``sr`` Hz: shape (n,) if mono, else (n, 2)."""
+    import av
+    import numpy as np
+
+    path = Path(path)
+    if not path.is_file():
+        raise MediaError(f"File not found: {path}")
+    chunks = []
+    try:
+        with av.open(str(path)) as container:
+            stream = next((s for s in container.streams if s.type == "audio"), None)
+            if stream is None:
+                raise MediaError(f"No audio stream in {path}")
+            resampler = av.AudioResampler(format="fltp", layout="mono" if mono else "stereo", rate=sr)
+            for frame in container.decode(stream):
+                chunks.extend(f.to_ndarray() for f in resampler.resample(frame))
+            chunks.extend(f.to_ndarray() for f in resampler.resample(None))
+    except MediaError:
+        raise
+    except Exception as exc:
+        raise MediaError(f"Cannot read audio from {path}: {exc}") from exc
+    if not chunks:
+        return np.zeros(0 if mono else (0, 2), np.float32)
+    data = np.concatenate(chunks, axis=1)
+    return data[0].astype(np.float32) if mono else data.T.astype(np.float32)
+
+
+def write_wav(path, data, sr: int = 48000) -> None:
+    """Write float samples in [-1, 1] as 16-bit PCM; ``data`` is (n,) or (n, channels)."""
+    import wave
+
+    import numpy as np
+
+    arr = np.clip(np.asarray(data, dtype=np.float32), -1.0, 1.0)
+    pcm = (arr * 32767.0).astype("<i2")
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1 if arr.ndim == 1 else arr.shape[1])
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes(pcm.tobytes())

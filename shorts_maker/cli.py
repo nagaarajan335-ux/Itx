@@ -12,6 +12,7 @@ from .captions import CaptionStyle, ass_color
 from .media import MediaError, probe
 from .render import RenderOptions, render_all
 from .suggest import audio_energy, suggest_clips
+from .story import StoryOptions, build_story
 from .transcript import get_transcript, words_of
 from .util import fmt_ts, slugify
 
@@ -73,6 +74,21 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("render", parents=[common, tx, rd], help="render the Shorts listed in clips.json")
     p.add_argument("--clips", help="clips file (default: <work>/clips.json)")
     sub.add_parser("run", parents=[common, tx, sg, rd], help="transcribe, pick moments and render, in one go")
+
+    st = sub.add_parser(
+        "story",
+        help="build a narrated, captioned vertical video from a story.json (your stills + voice clips)",
+    )
+    st.add_argument("spec", help="path to story.json (scenes, pictures, voice lines)")
+    st.add_argument("--out", help="output folder (default: output/<story folder name>)")
+    st.add_argument("--size", default="1080x1920", help="output size WxH (default: 1080x1920)")
+    st.add_argument("--fps", type=int, default=30)
+    st.add_argument("--crf", type=int, default=23, help="x264 quality, lower = better/larger (default: 23)")
+    st.add_argument("--preview", type=float, metavar="SECONDS", help="render only the first N seconds (quick look)")
+    st.add_argument("--preset", default="medium", help="x264 speed preset (default: medium)")
+    st.add_argument("--no-captions", action="store_true", help="do not burn in captions")
+    st.add_argument("--no-sound-design", action="store_true", help="narration only: no drone, heartbeat or effects")
+    st.add_argument("--font", help="TTF/OTF font for captions")
     return parser
 
 
@@ -158,10 +174,37 @@ def _render(args, video: Path, work: Path, out: Path, clips: List[Dict[str, Any]
     print(f"\nDone: {len(results)} Shorts in {out}/  (titles and descriptions: {out / 'shorts.md'})")
 
 
+# --------------------------------------------------------------------------- story mode
+SYNTHETIC_NOTE = (
+    "If the pictures or the voice are AI-generated and look realistic, switch on YouTube's "
+    "'altered or synthetic content' disclosure when you upload."
+)
+
+
+def _story(args) -> int:
+    try:
+        width, height = (int(v) for v in args.size.lower().split("x"))
+    except ValueError:
+        raise ValueError(f"--size must look like 1080x1920, got {args.size!r}") from None
+    if width < 2 or height < 2 or width % 2 or height % 2:
+        raise ValueError("--size needs even width and height")
+    spec = Path(args.spec).expanduser()
+    out = Path(args.out) if args.out else Path("output") / slugify(spec.resolve().parent.name, 60, "story")
+    print(f"Reminder: {SYNTHETIC_NOTE}\n", file=sys.stderr)
+    opts = StoryOptions(
+        width=width, height=height, fps=args.fps, crf=args.crf, preset=args.preset,
+        captions=not args.no_captions, sound=not args.no_sound_design, font_path=args.font, preview=args.preview,
+    )
+    build_story(spec, out, opts, log=lambda m: print(m, flush=True))
+    return 0
+
+
 # --------------------------------------------------------------------------- commands
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "story":
+            return _story(args)
         video, work, out = _paths(args)
         print(f"Reminder: {RESPONSIBLE_USE}\n", file=sys.stderr)
         if args.command == "transcribe":
